@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>details</title>
+</head>
+<body>
+<form action="" method="POST">
+    name:
+    <input type="name" placeholder="enter your name" name="name"><br><br>
+    marks:
+    <input type="number" placeholder="enter your marks" name="marks"><br><br>
+    id:
+    <input type="number" placeholder="enter id to be updated" name="id" ><br><br>
+    <input type="submit" value="upadted" name='btn'> <br><br>
+    <input type="submit" value="Insert" name='btn'> <br><br>
+</form>
+<table>
+    <tr>
+        <th>sid</th>
+        <th>sname</th>
+        <th>smark</th>
+        <th>Action</th>
+    </tr>
+    {% for row in student %}
+    <tr>
+        <td>{{row.0}}</td>
+        <td>{{row.1}}</td>
+        <td>{{row.2}}</td>
+        <td>
+            <form action="" method="POST">
+                <input type="hidden" name="delete1" value="{{row.0}}">
+                <input type="submit"  value="delete" name='btn'>
+            </form>
+        </td>
+
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>
