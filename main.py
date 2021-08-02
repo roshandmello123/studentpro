@@ -1,6 +1,7 @@
-from flask import Flask,render_template,request,redirect,url_for
+from flask import Flask,render_template,request,redirect,url_for,session
 import mysql.connector
 app = Flask(__name__)
+app.secret_key="abz"
 try:
     db=mysql.connector.connect(
         host="localhost",
@@ -26,6 +27,9 @@ def login():
         cur.execute("SELECT * from studlogin WHERE studname =%s AND studpassword =%s", (name,password))
         result=cur.fetchall()
         if len(result) > 0:
+            session["username"] = request.form["name"]
+            print(session)
+            print("here22")
             return redirect(url_for('detail'))
         cur.close()
     return render_template("login.html")
@@ -45,30 +49,20 @@ def register():
 
 @app.route('/details')
 def detail():
+        print(session)
+        if session.get("username") =="":
+            return redirect(url_for('login'))
         cur = db.cursor()
         cur.execute("SELECT * from stud")
         data=cur.fetchall()
         cur.close()
-        return render_template("detailsdb.html",student=data)
-
-# @app.route('/details',methods=['POST','GET'])
-# def delete():
-#     if request.method == 'POST':
-#         id=request.form["delete"]
-#         print("here")
-#         print(id)
-#         cur = db.cursor()
-#         cur.execute("DELETE FROM stud WHERE sid= %s" % (id))
-#         db.commit()
-#         cur.close()
-#         return redirect(url_for('detail'))
-#     return render_template("detailsdb.html")
+        return render_template("detailsdb.html",student=data,user=session.get("username"))
 
 @app.route('/details',methods=['POST','GET'])
 def update():
     if request.method == 'POST':
-        print("Up")
-        if  request.form["btn"] == "upadted":
+
+        if  request.form["btn"] == "updated":
             print("Up1")
             name= request.form["name"]
             marks=request.form["marks"]
@@ -97,25 +91,13 @@ def update():
             db.commit()
             cur.close()
             return redirect(url_for('detail'))
+        if request.form["btn"] == "logout":
+            print("AALa")
+            session["username"] = ""
+            print(session)
+            return redirect(url_for('login'))
     print("Up2")
     return render_template("detailsdb.html")
-
-@app.route('/details',methods=['POST','GET'])
-def delete():
-    if request.method == 'POST':
-        print("HERE1")
-        if request.form["btn"] == "delete":
-            print("HERE")
-            id=request.form["delete1"]
-            print("here")
-            print(id)
-            cur = db.cursor()
-            cur.execute("DELETE FROM stud WHERE sid= %s" % (id))
-            db.commit()
-            cur.close()
-            return redirect(url_for('detail'))
-    return render_template("detailsdb.html")
-
 
 
 if __name__ == '__main__':
